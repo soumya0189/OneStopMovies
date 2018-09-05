@@ -2,8 +2,6 @@ package com.phoenixforcehq.onestopmovies.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +20,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements BaseViewForMainActivity{
 
@@ -52,17 +51,18 @@ public class MainActivity extends AppCompatActivity implements BaseViewForMainAc
     MoviesAdapter adapterForNowPlayingMovies;
     MoviesAdapter adapterForUpcomingMovies;
 
-    private Unbinder unbinder;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         OneStopMoviesApplication.getComponent().inject(this);
 
         // TODO Inject using Dagger 2
-        presenter = new PresenterMainActivity(api);
+        presenter = new PresenterMainActivity(api, Schedulers.computation(), AndroidSchedulers.mainThread());
         presenter.attach(this);
         presenter.getPopularMovies();
+        presenter.getTopRatedMovies();
+        presenter.getNowPlayingMovies();
+        presenter.getUpcomingMovies();
 
         setContentView(R.layout.activity_main_2);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements BaseViewForMainAc
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //unbinder.unbind();
+        presenter.clearSubscriptions();
     }
 
     @Override

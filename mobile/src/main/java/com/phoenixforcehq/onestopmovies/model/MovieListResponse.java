@@ -14,6 +14,9 @@ public class MovieListResponse {
     @SerializedName("results")
     List<Movie> movies;
 
+    public MovieListResponse() {
+    }
+
     public int getPage() {
         return page;
     }

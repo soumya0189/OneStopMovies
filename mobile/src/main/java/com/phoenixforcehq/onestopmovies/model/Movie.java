@@ -33,6 +33,10 @@ public class Movie {
     @SerializedName("overview")
     String overView;
 
+    public Movie(String title) {
+        this.title = title;
+    }
+
     public int getVoteCount() {
         return voteCount;
     }
